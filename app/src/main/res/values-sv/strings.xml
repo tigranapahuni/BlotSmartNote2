@@ -17,4 +17,7 @@
     <string name="blot">Blot</string>
     <string name="fourpaper">4 kort</string>
     <string name="attention_toast">Det deklarerade antalet måste vara större än det sjunde</string>
+
+    <string name="newGame"> Vill du öppna en ny batch?</string>
+
 </resources>

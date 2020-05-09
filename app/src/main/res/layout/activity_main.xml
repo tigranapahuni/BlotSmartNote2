@@ -42,7 +42,8 @@
                     android:textAllCaps="false"
                     android:textColor="@color/coloryellownew"
                     android:textSize="@dimen/player_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:onClick="diler" />
 
                 <TextView
                     android:id="@+id/igrok1_D"
@@ -53,7 +54,8 @@
                     android:text="D"
                     android:textColor="@color/colorRed"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:onClick="diler" />
 
                 <View
                     android:layout_width="match_parent"
@@ -74,7 +76,8 @@
                     android:textAllCaps="false"
                     android:textColor="@color/coloryellownew"
                     android:textSize="@dimen/player_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:onClick="diler" />
 
                 <TextView
                     android:id="@+id/igrok2_D"
@@ -86,7 +89,8 @@
                     android:text="D"
                     android:textColor="@color/colorRed"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:onClick="diler" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -112,7 +116,8 @@
                     android:textAllCaps="false"
                     android:textColor="@color/coloryellownew"
                     android:textSize="@dimen/player_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:onClick="diler" />
 
                 <TextView
                     android:id="@+id/igrok3_D"
@@ -123,7 +128,8 @@
                     android:text="D"
                     android:textColor="@color/colorRed"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:onClick="diler" />
 
                 <View
                     android:layout_width="match_parent"
@@ -145,7 +151,8 @@
                     android:textAllCaps="false"
                     android:textColor="@color/coloryellownew"
                     android:textSize="@dimen/player_size"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:onClick="diler" />
 
                 <TextView
                     android:id="@+id/igrok4_D"
@@ -157,7 +164,8 @@
                     android:text="D"
                     android:textColor="@color/colorRed"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:onClick="diler" />
 
             </RelativeLayout>
 
@@ -200,7 +208,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="600dp"
+        android:layout_height="500dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -214,75 +222,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
 
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-
-        <TextView
-            android:enabled="false"
-            android:id="@+id/txtView_Team1"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:layout_weight="3"
-            android:background="@color/colorBlack"
-            android:clickable="false"
-            android:gravity="center"
-            android:onClick="open_extra_buttons_Team1"
-            android:text="@string/team1"
-            android:textColor="@color/coloryellownew"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-
-        <View
-            android:layout_width="2dp"
-            android:layout_height="20dp"
-            android:background="@color/coloryellownew" />
-
-        <TextView
-            android:enabled="false"
-            android:id="@+id/txtView_Team2"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:layout_weight="3"
-            android:background="@color/colorBlack"
-            android:clickable="false"
-            android:gravity="center"
-            android:onClick="open_extra_buttons_Team2"
-            android:text="@string/team2"
-            android:textColor="@color/coloryellownew"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-
-        <View
-            android:layout_width="2dp"
-            android:layout_height="20dp"
-            android:background="@color/coloryellownew" />
-
-        <TextView
-            android:id="@+id/txtView_zakaz"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:layout_weight="3"
-            android:background="@color/colorRed"
-            android:clickable="false"
-            android:gravity="center"
-            android:onClick="open_extra_Order_buttons"
-            android:text="Order"
-            android:textColor="@color/coloryellownew"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -417,9 +357,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="60dp"
-        app:fabSize="normal"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
         app:srcCompat="@drawable/ic_more_vert_yellow_24dp" />
 
 

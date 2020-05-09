@@ -1,19 +1,27 @@
 package com.narsli.blotsmartnote;
 
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.OvershootInterpolator;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.narsli.blotsmartnote.Adapter.HashivAdapter;
 import com.narsli.blotsmartnote.Adapter.RecyclerViewAdapter;
 import com.narsli.blotsmartnote.Data.HashivAppDatabase;
 import com.narsli.blotsmartnote.Model.BloteNote;
@@ -30,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements
         View.OnClickListener {
     //_____________________________________________________________________
 //--------------------------- POPOXAKANNER DB-ov----------------------------
-    private HashivAdapter hashivnerAdapter;
+//    private HashivAdapter hashivnerAdapter;
     private ArrayList<BloteNote> hashivArrayList = new ArrayList<>();
     private RecyclerView recyclerView_hashiv;
     //mer koxmic sarqac clasi ekzempliar
@@ -39,15 +47,23 @@ public class MainActivity extends AppCompatActivity implements
 
     //--------------------------- POPOXAKANNER ----------------------------
     private TextView
-            txtView_kom1, txtView_kom2, txtView_order,
             igrok1_D, igrok2_D, igrok3_D, igrok4_D;
+    private Button
+            txt_player1, txt_player2, txt_player3, txt_player4;
     private ImageView Img_mast;
-    byte kom1_kom2, kom1_kom2_xosacele;
-    int mast;
+    private ImageButton imgeViw_close_diler_dialog, imgBtn_Ok,
+            imgeViw_close_diler_newGame, imgBtn_Ok_newGame;
+    byte kom1_kom2, kom1_kom2_kanchele;
+    int mast, Partia_Hashiv_Kom1 = 0, Partia_Hashiv_Kom2 = 0,
+            fullHashiv_kom1, fullHashiv_kom2;
     String order;
     private LinearLayout resultLayout;
     private TextView textView_Kom1_New, textView_Kom2_New;
-
+    private Dialog dialog_diler, dialog_newGame;
+    private EditText
+            edtTxt_igrok1, edtTxt_igrok2, edtTxt_igrok3, edtTxt_igrok4;
+    private ArrayList<Integer> hashiv_Zangvac_kom1, hashiv_Zangvac_kom2;
+    boolean mejtex_Nor_Tox = true;//ete true e nor tox e, ete false mejtexi
 //_____________________________________________________________________
 //___________________________menu popoxakanner ________________________
 
@@ -60,9 +76,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String TAG = "MainActivity";
 
     Boolean isMenuOpen = false;
-    private TextView txtView_Team1, txtView_Team2, txtView_zakaz;
-    boolean team1Team2_Zakaz_banali = true;//true=bacel zakazn, false bacel team1 or team2
-    int igrok_ochered = 1;
+//     int igrok_ochered = 1;
 //_____________________________________________________________________
 //------------------------------ RecyvleView --------------------------
 
@@ -70,14 +84,15 @@ public class MainActivity extends AppCompatActivity implements
 //    kapenq java kodi het
     private RecyclerView recyclerView;
     //adaptern nman e mosti vorn kapum e tvyalnern RecyclerView-i het
-    // henc adaptern e vor RecyclerView-n listview-i nkatmamb aravelutyun e sarqum \
-    // aysinqn  adaptern amboxj elemntnernn chi lcnum RecyclerView-i mej ayl miayn el
+// henc adaptern e vor RecyclerView-n listview-i nkatmamb aravelutyun e sarqum \
+// aysinqn  adaptern amboxj elemntnernn chi lcnum RecyclerView-i mej ayl miayn el
     // elementnern voronq hima user-n tesnum e ev mi qani hat harevan.
     private RecyclerView.Adapter adapter;
     //    xekavarum e elementneri dirq layout-i vra
     private RecyclerView.LayoutManager layoutManager;
-    private ArrayList<RecyclerViewItem> recyclerViewItem;
-
+    private ArrayList<RecyclerViewItem> recyclerViewItem_ArrayList;
+    int taracMiavor_Kom1_2, kom1_2_miavor_avtomat_hashvac;
+    private int position;
     //_____________________________________________________________________
 //_____________________________________________________________________
 //----------------------------DB -RecyvleView Strart-------------------
@@ -91,51 +106,90 @@ public class MainActivity extends AppCompatActivity implements
 //mneu ininializacia
 
         initFabMenu();
+        //  activity1.setContentView(R.layout.hashiv_list_item);//kpcnum enq razmetkain(maketin)
 
 //------------------
-        txtView_order = findViewById(R.id.txtView_order);
-        txtView_kom1 = findViewById(R.id.txtView_kom1);
-        txtView_kom2 = findViewById(R.id.txtView_kom2);
-        Img_mast = findViewById(R.id.Img_mast);
-
-
-        txtView_Team1 = findViewById(R.id.txtView_Team1);
-        txtView_Team2 = findViewById(R.id.txtView_Team2);
-        txtView_zakaz = findViewById(R.id.txtView_zakaz);
+        txt_player1 = findViewById(R.id.txt_player1);
+        txt_player2 = findViewById(R.id.txt_player2);
+        txt_player3 = findViewById(R.id.txt_player3);
+        txt_player4 = findViewById(R.id.txt_player4);
 
         igrok1_D = findViewById(R.id.igrok1_D);
         igrok2_D = findViewById(R.id.igrok2_D);
         igrok3_D = findViewById(R.id.igrok3_D);
         igrok4_D = findViewById(R.id.igrok4_D);
 //--------------------------------------------------------------------------
+        //anjatum enq dileri D tarern userneri anunneri motic
         igrok2_D.setVisibility(View.INVISIBLE);
         igrok3_D.setVisibility(View.INVISIBLE);
         igrok4_D.setVisibility(View.INVISIBLE);
 
         resultLayout = findViewById(R.id.ResultLayout);
-
         // createNewLineHashiv();
 //_____________________________________________________________________
+//__________________________ Diler dialog _____________________________
+        dialog_diler = new Dialog(this);//stexcum enq dialog
+        dialog_diler.requestWindowFeature(Window.FEATURE_NO_TITLE);//anjatum enq vernagirn
+        dialog_diler.setContentView(R.layout.xaxacoxneri_anunner);//kpcnum enq razmetkain(maketin)
+
+
+        dialog_newGame = new Dialog(this);//stexcum enq dialog
+        dialog_newGame.requestWindowFeature(Window.FEATURE_NO_TITLE);//anjatum enq vernagirn
+        dialog_newGame.setContentView(R.layout.new_game_dialog);//kpcnum enq razmetkain(maketin)
+
+        //dialog-i foni hetevn lini tapancik
+        // dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//asum enq dialogi mej inch ka et chaperov el lini dilaogn
+//         dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+//                 WindowManager.LayoutParams.MATCH_PARENT);
+//        dialog.setCancelable(false);//nazad knopkan anjatum enq
+
+//ays toxn anhrajesht e vorpeszi verevi aj ankyuni pakman x-n normal dur ekac ereva
+        dialog_diler.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+
+//-----------------
+        imgeViw_close_diler_dialog = dialog_diler.findViewById(R.id.ImgeViw_closeX);
+        imgBtn_Ok = dialog_diler.findViewById(R.id.imgBtn_Ok);
+        edtTxt_igrok1 = dialog_diler.findViewById(R.id.edtTxt_igrok1);
+        edtTxt_igrok2 = dialog_diler.findViewById(R.id.edtTxt_igrok2);
+        edtTxt_igrok3 = dialog_diler.findViewById(R.id.edtTxt_igrok3);
+        edtTxt_igrok4 = dialog_diler.findViewById(R.id.edtTxt_igrok4);
+//---------------
+//ays toxn anhrajesht e vorpeszi verevi aj ankyuni pakman x-n normal dur ekac ereva
+        dialog_newGame.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        imgeViw_close_diler_newGame = dialog_newGame.findViewById(R.id.ImgeViw_closeX);
+        imgBtn_Ok_newGame = dialog_newGame.findViewById(R.id.imgBtn_Ok);
 //_____________________________________________________________________
+        newGame();
+        //hashivneri zangvavnern enq inicializacnum
+        hashiv_Zangvac_kom1 = new ArrayList<>();
+        hashiv_Zangvac_kom2 = new ArrayList<>();
+
 //------------------------------ RecyvleView --------------------------
 //        mer stexcac klas-i ekzemplyar enq stexcum
-        recyclerViewItem = new ArrayList<>();
+        recyclerViewItem_ArrayList = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView_hashiv);
+//arajin toxn enq stanum hashivneri
+        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, "0"));
 
-//
-//// ays toxn petq e vor RecyclerView-n amboxj arraylistn chatni hishoxutyun ayl mi
-//// masn, vor heraxosn chkaxi, tvyal depqum asum enq vor fiqsac size- uni
-//        recyclerView.setHasFixedSize(true);
-////        adapteri inicializaci enq anum, vorin talis enq mer
-////        koxmic sarqac arrayList` recyclerViewItem-n
-//        adapter = new RecyclerViewAdapter(recyclerViewItem);
-////        aysex layouti pahern e, karevor che
-//        layoutManager = new LinearLayoutManager(this);
-////inicializaciaic heto LayoutManager-n u adapter-n texadrum enq mer recyclerView hamar
-//        recyclerView.setAdapter(adapter);
+        // ays toxn petq e vor RecyclerView-n amboxj arraylistn chatni hishoxutyun ayl mi
+// masn, vor heraxosn chkaxi, tvyal depqum asum enq vor fiqsac size- uni
+        recyclerView.setHasFixedSize(true);
+//adapteri inicializaci enq anum, vorin talis enq mer koxmic sarqac arrayList` recyclerViewItem-n
+        adapter = new RecyclerViewAdapter(recyclerViewItem_ArrayList,
+                MainActivity.this);
+//aysex layouti pahern e, karevor che
+        layoutManager = new LinearLayoutManager(this);
+//inicializaciaic heto LayoutManager-n u adapter-n texadrum enq mer recyclerView hamar
+        recyclerView.setAdapter(adapter);
+//nuyn elementic 3 hat-ov mi toxi vra, GridLayoutManager-axyusaki tesqov
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
 //        recyclerView.setLayoutManager(layoutManager);
-
-        //_____________________________________________________________________
+//_____________________________________________________________________
 //_____________________________________________________________________
 //----------------------------DB -RecyvleView Strart-------------------
 //        recyclerView_hashiv = findViewById(R.id.recyclerView_hashiv);
@@ -387,13 +441,50 @@ public class MainActivity extends AppCompatActivity implements
 //
 //            return null;
 //        }
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//---------------------    listView-i realizacnum enq onClick-n  -------------------------
+
+//        recyclerView.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                Car car = carArrayList.get(position);
+//
+//                car.setName(name);
+//                car.setPrice(price);
+//
+//
+//                carArrayList.set(position, car);
+//            }
+
+//            @Override
+//     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//       //------------------------------------- Toast ----------------------------------------------
+//       parent.setVisibility(view.GONE);//listview-i visibility- false enq anum
+////                // listView-i yuraqanchyur dashtn mek view-e
+//                view.setVisibility(view.GONE);//click-i t darcnum enq antesaneli view-eric mekn
+//
+//                                            }
+//                                        });
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+//            {
+////            parent.setVisibility(view.GONE);//listview-i visibility- false enq anum
+//                // listView-i yuraqanchyur dashtn mek view-e
+////                view.setVisibility(view.GONE);//click-i t darcnum enq antesaneli view-eric mekn
+////------------------------------------------------------------------------------------------
+////------------------------------------- Toast ----------------------------------------------
+//                Toast.makeText(MainActivity.this, "duq sexmel eq:"+ position+" toxin",
+//                        Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//
     }
 
     //-------------------------------------------------------------------------
 //----------------------------DB -RecyvleView End----------------------
 //-------------------------------------------------------------------------
-//
-//
 //    private void createNewLineHashiv() {
 ////                resultLayout.removeAllViews();
 //      //  LinearLayout layoutLine = new LinearLayout(resultLayout.getContext());
@@ -442,147 +533,294 @@ public class MainActivity extends AppCompatActivity implements
 //        //setContentView(layoutLine);
 //    }
 //--------------------------------------------------------------------
-    // interfeysi metodi pereopreedlyactia
+//ays metodn avtomat texi e unenum hetevyal metodnern kanchvelis 1.editHashiv,
+// 2.open_extra_buttons_Team1, 3.open_extra_buttons_Team2, qani vor ays 3-um el ka
+//ExtraButtonDialog-interfeysi metodi pereopreedlyactia
+//@nd vorum stanum e mutqayin tvyalner interfeysic, (te inch hashiv petq e gri)
     @Override
-    public void onButtonClicked(String taracMiavor_Kom1_2, String kom1_2_miavor_avtomat_hashvac) {
-//    public void onButtonClicked(String kom1_kom2_miavor, ) {
-        if (kom1_kom2 == 1) {
-            txtView_kom1.setText(taracMiavor_Kom1_2);
-            txtView_kom2.setText(kom1_2_miavor_avtomat_hashvac);
-        } else {
-            txtView_kom1.setText(kom1_2_miavor_avtomat_hashvac);
-            txtView_kom2.setText(taracMiavor_Kom1_2);
+    public void onButtonClicked(int taracMiavor_Kom1_2, int kom1_2_miavor_avtomat_hashvac) {
+//---------------------------- popoxakanner  ------------------------------
+        int temp;
+//--------------------------------
+        this.taracMiavor_Kom1_2 = taracMiavor_Kom1_2;
+        this.kom1_2_miavor_avtomat_hashvac = kom1_2_miavor_avtomat_hashvac;
+
+        if (kom1_kom2 == 1)//araji syun tarberak
+        {
+//nor tox tarberak
+            if (mejtex_Nor_Tox == true) {
+                //zangvaci mej pahum enq stacvac hashcivnern syunakneri kom1-i ev kom2-i
+                hashiv_Zangvac_kom1.add(taracMiavor_Kom1_2);
+                hashiv_Zangvac_kom2.add(kom1_2_miavor_avtomat_hashvac);
+
+
+                fullHashiv_kom1 = syuneri_gumar(hashiv_Zangvac_kom1);
+                fullHashiv_kom2 = syuneri_gumar(hashiv_Zangvac_kom2);
+
+                recyclerViewItem_ArrayList.get(position).setZakaz("" + fullHashiv_kom1);
+                recyclerViewItem_ArrayList.get(position + 1).setZakaz("" + fullHashiv_kom2);
+//stugum enq xaxn avartvum e te voch
+                if (fullHashiv_kom1 > fullHashiv_kom2) {
+                    if (fullHashiv_kom1 >= 301) {
+//                        Partia_Hashiv_Kom1=Partia_Hashiv_Kom1+1;
+//                        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, ""+Partia_Hashiv_Kom1));
+//                        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+//                        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, ""+Partia_Hashiv_Kom2));
+
+                        dialog_newGame.show();
+
+                    }
+                } else if (fullHashiv_kom2 > fullHashiv_kom1) {
+                    if (fullHashiv_kom2 >= 301) {
+
+                        dialog_newGame.show();
+//                        Partia_Hashiv_Kom2=Partia_Hashiv_Kom2+1;
+//                        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, ""+Partia_Hashiv_Kom1));
+//                        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+//                        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, ""+Partia_Hashiv_Kom2));
+
+                    }
+
+                }
+            }
+            //-----------------
+            else {//exac toxn enq xmbagrum tarberak
+                temp = 0;
+
+                hashiv_Zangvac_kom1.set((position / 3), taracMiavor_Kom1_2);
+                int i = 1;
+                do {
+                    recyclerViewItem_ArrayList.get(temp).setZakaz("" + syuneri_gumar(hashiv_Zangvac_kom1, i));
+                    i++;
+                    temp = temp + 3;
+                }
+                while (i <= hashiv_Zangvac_kom1.size());//
+            }
+//
+            //image-n xalastoy 0 enq grum
+            recyclerViewItem_ArrayList.get(position).setImageResource(0);
+
+        } else if (kom1_kom2 == 2) {//2-syun tarbeak
+
+
+            if (mejtex_Nor_Tox == true) {//nnor tox varinatne
+//zangvaci mej pahum enq stacvac hashcivnern syunakneri kom1-i ev kom2-i
+                hashiv_Zangvac_kom1.add(kom1_2_miavor_avtomat_hashvac);
+                hashiv_Zangvac_kom2.add(taracMiavor_Kom1_2);
+
+                fullHashiv_kom1 = syuneri_gumar(hashiv_Zangvac_kom2);
+                fullHashiv_kom2 = syuneri_gumar(hashiv_Zangvac_kom1);
+
+                recyclerViewItem_ArrayList.get(position).setZakaz("" + fullHashiv_kom1);
+                recyclerViewItem_ArrayList.get(position - 1).setZakaz("" + fullHashiv_kom2);
+            } else {//exac toxn enq xmbagrum tarberak
+                temp = 1;
+                hashiv_Zangvac_kom2.set((position / 3), taracMiavor_Kom1_2);
+                int i = 1;
+                do {
+                    recyclerViewItem_ArrayList.get(temp).setZakaz("" + syuneri_gumar(hashiv_Zangvac_kom2, i));
+                    i++;
+                    temp = temp + 3;
+                }
+                while (i <= hashiv_Zangvac_kom2.size());//
+            }
         }
 
+//new Line nor tox bacelu pahn e
+        if (position >= recyclerViewItem_ArrayList.size() - 3) {
+            recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+            recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+            recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, "0"));
+            //diler poxelu pahn e
+            diler();
+        }
+
+//scrollView-i regulirovka
+//vorpeszi  amen nor tox haytnvelis focusn lini verjin toxi vra, scrollView-i mej
+        ((LinearLayoutManager) recyclerView.getLayoutManager()).
+                scrollToPositionWithOffset(recyclerViewItem_ArrayList.size() - 1, 0);
+
+//tarmacnum enq adaptern, vor useri katarac popoxutyunnern erevan
+        adapter.notifyDataSetChanged();
     }
 
     //-----------------------------------------------------------------------------
+//ays metodn avtomat kanchvum e open_extra_Order_buttons-metodi kanchic heto, qani vor
+//ExtraOrderBtnDialog-interfeysi pereopreedlyactia e, isk open_extra_Order_buttons-metodum
+//  ExtraOrderBtnDialog-interferysn-i ekzempliar enq sarqum ev cuyc talis
+//@nd vorum stanum e mutqayin tvyalner interfeysic, (te vor komandan e xosacel, mast, tiv)
 //ays metodn mianum e useri order-n uzeluc heto(zakaz knopkai vra sexmeluc heto)
-    public void order_OnButtonClicked(byte kom1_kom2_xosacele, int mast, String order) {
-        this.kom1_kom2_xosacele = kom1_kom2_xosacele;
+    @Override
+    public void order_OnButtonClicked(byte kom1_kom2_kanchele, int mast, String order) {
+//--------------
+        this.kom1_kom2_kanchele = kom1_kom2_kanchele;
         this.mast = mast;//tvysl oyini mastn e
         this.order = order;//tvyal oyini xosacac tivn e
-
-
-        //createHashiv(nameEditText.getText().toString(), priceEditText.getText().toString());
-//        txtView_order.setText(order);
+        int imageResurce;
+//kaxvac vor mastn e @ntrel usern ayd masti nkarn enq dnum ekrani vra
         switch (mast) {
             case 0:
+                imageResurce = R.drawable.x_24;
                 //new CreateHashivAsyncTask().execute(new BloteNote(0, "0", "0",R.drawable.x_24, order));
-                //     String txt_kom1, String txt_kom2, int imageResource,String zakaz
-                recyclerViewItem.add(new RecyclerViewItem("0", "0",
-                        R.drawable.x_24, order));
-                // Img_mast.setImageResource(R.drawable.x_24);
                 break;
             case 1:
-                recyclerViewItem.add(new RecyclerViewItem("0", "0",
-                        R.drawable.s_24, order));
-                //  new CreateHashivAsyncTask().execute(new BloteNote(0, "0", "0",R.drawable.s_24, order));
-
-                //    Img_mast.setImageResource(R.drawable.s_24);
+                imageResurce = R.drawable.s_24;
                 break;
             case 2:
-                recyclerViewItem.add(new RecyclerViewItem("0", "0",
-                        R.drawable.xar_24, order));
-                //     new CreateHashivAsyncTask().execute(new BloteNote(0, "0", "0",R.drawable.xar_24, order));
-
-                //    Img_mast.setImageResource(R.drawable.xar_24);
+                imageResurce = R.drawable.xar_24;
                 break;
             case 3:
-                recyclerViewItem.add(new RecyclerViewItem("0", "0",
-                        R.drawable.q_24, order));
-                //   new CreateHashivAsyncTask().execute(new BloteNote(0, "0", "0",R.drawable.q_24, order));
-
-                //  Img_mast.setImageResource(R.drawable.q_24);
+                imageResurce = R.drawable.q_24;
                 break;
             default:
-                recyclerViewItem.add(new RecyclerViewItem("0", "0",
-                        R.drawable.t_24, order));
-                //   new CreateHashivAsyncTask().execute(new BloteNote(0, "0", "0",R.drawable.t_24, order));
-
-                // Img_mast.setImageResource(R.drawable.t_24);
+                imageResurce = R.drawable.t_24;
                 break;
         }
 
-// ays toxn petq e vor RecyclerView-n amboxj arraylistn chatni hishoxutyun ayl mi
-// masn, vor heraxosn chkaxi, tvyal depqum asum enq vor fiqsac size- uni
-        recyclerView.setHasFixedSize(true);
-//        adapteri inicializaci enq anum, vorin talis enq mer
-//        koxmic sarqac arrayList` recyclerViewItem-n
-        adapter = new RecyclerViewAdapter(recyclerViewItem);
-//        aysex layouti pahern e, karevor che
-        layoutManager = new LinearLayoutManager(this);
-//inicializaciaic heto LayoutManager-n u adapter-n texadrum enq mer recyclerView hamar
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(layoutManager);
+//ete sexmel e 3 syan vra, apa ayd syan vra popoxutyun enq anum
+        if (position % 3 == 2) {
+            recyclerViewItem_ArrayList.get(position).setZakaz(order);
+            recyclerViewItem_ArrayList.get(position).setImageResource(imageResurce);
+        }
+//ete derevs xoz chxosacac toxi vra sexmel e syun1 kam syun2-i vra eli bacum e xoz xosalun@
+        else {
+            recyclerViewItem_ArrayList.get(recyclerViewItem_ArrayList.size() - 1).setZakaz(order);
+            recyclerViewItem_ArrayList.get(recyclerViewItem_ArrayList.size() - 1).setImageResource(imageResurce);
+        }
+
+//tarmacnum enq adaptern, vor useri katarac popoxutyunnern erevan
+        adapter.notifyDataSetChanged();
     }
 
     //_____________________________________________________________________
-//ays metodn mianum e useri Team1-n sexmeluc heto
-    public void open_extra_buttons_Team1(View view) {
-        kom1_kom2 = 1;
-//activity-ic dialog info poxancelu hamar e
-        //        //mer sarqac interfeysi ekzempliar
-        ExtraButtonDialog bottomSheet = new ExtraButtonDialog(kom1_kom2, mast, order);
-        bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
-        if (igrok_ochered == 4)
-            igrok_ochered = 1;
-        else
-            igrok_ochered++;
+//-------------------------------------------------------------------------
+//ays metodn kanchvum e RecyclerViewAdapter -klaci mejic RecyclerView-i vra sexmelis
+// @nd voorum position-ov stanum e useri koxmic nshvac toxi hamarn
+//position-in darcnum enq global, aynuhetev kanchum enq hashivner nermucelu`
+// ExtraButtonDialog, vori avartic heto, vorpes interfeysi pereopredlenni metodi (onButtonClicked)
+// realizacia` texi unenum metod onButtonClicked-i kanchn, vorn el stanum mutqayin tvyalner
+// interfeysic, te inch hashiv petq e gri
+    public void editHashiv(final int position) {
+        int mnacord, temp;
+
+//sa nshanakum e usern sexmel e toxi (=positioni) vra ev uzum e hashivnern xmbagri
+        // kom1_kom2=1-i kom1-n e sexmvac, kom1_kom2=2 kom2- e sexmvac
+
+        this.position = position;
+//        Log.d("qqq", ""+position/3);
+//---------
+//3 syunic axyusak enq stanum, vortex 3-i bajanelis mnacordum
+// 1-in syunin mnum e mnacord= 0, 2-rd syunin mnacord=1, isk 3-rdin mnacord=2
+        mnacord = position % 3;
+//New Game rejimn e, xaxi skzbum erb voch mek der chi xosacel
+        //{
+        if (mnacord == 2)//bacel xoz xosalu texn
+        {
+            try {
+                ExtraOrderBtnDialog bottomSheet = new ExtraOrderBtnDialog();
+                bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
+            } catch (ClassCastException e) {
+                throw new ClassCastException();
+            }
+        }//bacel hashiv grelu dashtn (1-in syunn)
+        else if (mnacord == 0) {
+//isk ete derevs xoz xosalu dashtn datark e, apa eli bacel miayn xoz xosalu texn
+            if (recyclerViewItem_ArrayList.get(position + 2).getZakaz().equals("0")) {
+                try {
+                    ExtraOrderBtnDialog bottomSheet = new ExtraOrderBtnDialog();
+                    bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
+                } catch (ClassCastException e) {
+                    throw new ClassCastException();
+                }
+            } else {//tvyal toxi xozn arden xosacel en
+                kom1_kom2 = 1;
+                if (recyclerViewItem_ArrayList.get(position).getZakaz() == null) {
+                    temp = 0;
+                    mejtex_Nor_Tox = true;//ete true e nor tox e, ete false mejtexi
+                } else {
+                    temp = hashiv_Zangvac_kom1.get((position / 3));
+                    mejtex_Nor_Tox = false;//ete true e nor tox e, ete false mejtexi
+                    //xalastoy rejim, miayn xmbagrel tmeric meki hashivn
+                    kom1_kom2_kanchele = 0;
+                }
+//mer sarqac interfeysi ekzempliar
+                ExtraButtonDialog bottomSheet = new ExtraButtonDialog(
+                        temp,
+                        // recyclerViewItem_ArrayList.get(position).getZakaz(),
+                        kom1_kom2, kom1_kom2_kanchele, mast, order);
+                bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
+            }
+        } else if (mnacord == 1) {//bacel hashiv grelu dashtn (2-in syunn)
+//isk ete derevs xoz xosalu dashtn datark e ayd toxi vra,
+// apa eli bacel miayn xoz xosalu texn
+            if (recyclerViewItem_ArrayList.get(position + 1).getZakaz().equals("0")) {
+                try {
+                    ExtraOrderBtnDialog bottomSheet = new ExtraOrderBtnDialog();
+                    bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
+                } catch (ClassCastException e) {
+                    throw new ClassCastException();
+                }
+            } else {//tvyal toxi xozn arden xosacel en
+                kom1_kom2 = 2;
+                if (recyclerViewItem_ArrayList.get(position).getZakaz() == null) {
+                    temp = 0;
+                    mejtex_Nor_Tox = true;//ete true e nor tox e, ete false mejtexi
+                } else {
+                    temp = hashiv_Zangvac_kom2.get((position / 3));
+                    mejtex_Nor_Tox = false;//ete true e nor tox e, ete false mejtexi
+                    //xalastoy rejim, miayn xmbagrel tmeric meki hashivn
+                    kom1_kom2_kanchele = 0;
+                }
+//mer sarqac interfeysi ekzempliar
+                ExtraButtonDialog bottomSheet = new ExtraButtonDialog(
+                        temp,
+                        // recyclerViewItem_ArrayList.get(position).getZakaz(),
+                        kom1_kom2, kom1_kom2_kanchele, mast, order);
+                bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
+
+            }
+        }
     }
 
-    //------------------------------------------------------------------------------
-//ays metodn mianum e useri Team2-n sexmeluc heto
-    public void open_extra_buttons_Team2(View view) {
-
-        kom1_kom2 = 2;
-//activity-ic dialog info poxancelu hamar e
-        //        //mer sarqac interfeysi ekzempliar
-        ExtraButtonDialog bottomSheet = new ExtraButtonDialog(kom1_kom2, mast, order);
-        bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
-
-        if (igrok_ochered == 4)
-            igrok_ochered = 1;
-        else
-            igrok_ochered++;
-    }
-
-    //------------------------------------------------------------
-    public void open_extra_Order_buttons(View view) {
-
-
-//        addAndEditHashiv(false, null, -1);
-
-        try {
-            ExtraOrderBtnDialog bottomSheet = new ExtraOrderBtnDialog();
-            bottomSheet.show(getSupportFragmentManager(), "exampleBottomSheet");
-        } catch (ClassCastException e) {
-            throw new ClassCastException();
+    //}
+//_________________________________________________________________________
+//_________________________________________________________________________
+//dileri D tarn teqelu pahn e
+    private void diler() {
+        int igrok_ochered = recyclerViewItem_ArrayList.size() % 4;
+        //if (igrok_ochered==0 )
+//Log.d("aaa", ""+igrok_ochered);
+        switch (igrok_ochered) {
+            case 3:
+                igrok1_D.setVisibility(View.VISIBLE);
+                igrok2_D.setVisibility(View.INVISIBLE);
+                igrok3_D.setVisibility(View.INVISIBLE);
+                igrok4_D.setVisibility(View.INVISIBLE);
+                break;
+            case 2:
+                igrok3_D.setVisibility(View.VISIBLE);
+                igrok1_D.setVisibility(View.INVISIBLE);
+                igrok2_D.setVisibility(View.INVISIBLE);
+                igrok4_D.setVisibility(View.INVISIBLE);
+                break;
+            case 1:
+                igrok2_D.setVisibility(View.VISIBLE);
+                igrok1_D.setVisibility(View.INVISIBLE);
+                igrok3_D.setVisibility(View.INVISIBLE);
+                igrok4_D.setVisibility(View.INVISIBLE);
+                break;
+            case 0:
+                igrok4_D.setVisibility(View.VISIBLE);
+                igrok1_D.setVisibility(View.INVISIBLE);
+                igrok2_D.setVisibility(View.INVISIBLE);
+                igrok3_D.setVisibility(View.INVISIBLE);
+                break;
         }
 
-        //  addAndEditCars(false, null, -1);
-////        txtView_Team1, txtView_Team2, txtView_zakaz
-//        if (team1Team2_Zakaz_banali == true)//
-//        {
-//            txtView_zakaz.setBackgroundResource(R.color.colorBlack);
-//            txtView_Team1.setBackgroundResource(R.color.colorRed);
-//            txtView_Team2.setBackgroundResource(R.color.colorRed);
-////            anjatum enq useri hamar zakazi hnaravorutyunn
-//
-////            txtView_Team1.setFocusable(true);
-////            txtView_Team1.setEnabled(true);
-////
-////            txtView_Team2.setFocusable(true);
-////            txtView_Team2.setEnabled(true);
-//            team1Team2_Zakaz_banali = !team1Team2_Zakaz_banali;
-//
-//        }
 
     }
 
-    //-------------------------------------------------------------------------
-//_________________________________________________________________________
-//------------------------------- MENU  -----------------------------------
+    //------------------------------- MENU  -----------------------------------
     private void initFabMenu() {
         fabMain = findViewById(R.id.fabMain);
         fabOne = findViewById(R.id.fabOne);
@@ -709,6 +947,131 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-//_________________________________________________________________________
+    //_________________________________________________________________________________
+//_____________________________ DILER ---------------------------------------------
+//dileri poxman pahn e
+    public void diler(View view) {
+//dialogi stexcman mek ayl dzev en kirarel
+        dialog_diler.show();
+    }
 
+    //-------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------
+    public void diler_close(View view) {
+        dialog_diler.dismiss();
+    }
+
+    //-------------------------------------------------------------------------------
+    public void diler_ok(View view) {
+
+        if (TextUtils.isEmpty(edtTxt_igrok1.getText().toString())) {
+            txt_player1.setText("A-1");
+        } else
+            txt_player1.setText(edtTxt_igrok1.getText());
+//--**********************
+        if (TextUtils.isEmpty(edtTxt_igrok2.getText().toString())) {
+            txt_player2.setText("A-2");
+        } else
+            txt_player2.setText(edtTxt_igrok2.getText());
+//--**********************
+        if (TextUtils.isEmpty(edtTxt_igrok3.getText().toString())) {
+            txt_player3.setText("B-1");
+        } else
+            txt_player3.setText(edtTxt_igrok3.getText());
+//--**********************
+        if (TextUtils.isEmpty(edtTxt_igrok4.getText().toString())) {
+            txt_player4.setText("B-2");
+        } else
+            txt_player4.setText(edtTxt_igrok4.getText());
+//
+        dialog_diler.dismiss();
+    }
+
+    //_________________________________________________________________________
+//syuneri hashivneri gumarn enq hshvum, vortex syunn mek arrayList e
+    private int syuneri_gumar(ArrayList<Integer> syun) {
+        int summa = 0;
+        for (int i = 0; i < syun.size(); i++)
+            summa += syun.get(i);
+        return summa;
+    }
+
+    //---------------------------------------------------------------------------
+//syuneri hashivneri gumarn enq hshvum, minchev size-chapn, vortex syunn mek arrayList e
+    private String syuneri_gumar(ArrayList<Integer> syun, int size) {
+        int summa = 0, i = 0;
+        do {
+            summa = summa + syun.get(i);
+            i++;
+        }
+        while (i < size);
+        return "" + summa;
+    }
+
+    //new Game -dialogi pakman knopka
+    public void newGame_close(View view) {
+        dialog_newGame.dismiss();
+    }
+
+    //new Game -dialogi ok knopka
+    public void newGame_ok(View view) {
+        if (fullHashiv_kom1 > fullHashiv_kom2)
+            Partia_Hashiv_Kom1 = Partia_Hashiv_Kom1 + 1;
+        else if (fullHashiv_kom2 > fullHashiv_kom1)
+            Partia_Hashiv_Kom2 = Partia_Hashiv_Kom2 + 1;
+        recyclerViewItem_ArrayList.get(recyclerViewItem_ArrayList.size() - 3).
+                setZakaz("" + Partia_Hashiv_Kom1);
+        recyclerViewItem_ArrayList.get(recyclerViewItem_ArrayList.size() - 1).
+                setZakaz("" + Partia_Hashiv_Kom2);
+
+//        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+//        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+//        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, "0"));
+
+        //newGame();
+
+        ((LinearLayoutManager) recyclerView.getLayoutManager()).
+                scrollToPositionWithOffset(recyclerViewItem_ArrayList.size() - 1, 0);
+
+        adapter.notifyDataSetChanged();
+
+
+        //hashivneri zangvavnern enq inicializacnum
+        hashiv_Zangvac_kom1 = new ArrayList<>();
+        hashiv_Zangvac_kom2 = new ArrayList<>();
+
+//------------------------------ RecyvleView --------------------------
+//        mer stexcac klas-i ekzemplyar enq stexcum
+        recyclerViewItem_ArrayList = new ArrayList<>();
+
+        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, "0"));
+
+
+//tarmacnum enq adaptern, vor useri katarac popoxutyunnern erevan
+        adapter.notifyDataSetChanged();
+        dialog_newGame.dismiss();
+    }
+
+    //nor xax enq bacum, zroyacnelov arrayListern
+    private void newGame() {
+        //hashivneri zangvavnern enq inicializacnum
+        hashiv_Zangvac_kom1 = new ArrayList<>();
+        hashiv_Zangvac_kom2 = new ArrayList<>();
+
+//------------------------------ RecyvleView --------------------------
+//        mer stexcac klas-i ekzemplyar enq stexcum
+        recyclerViewItem_ArrayList = new ArrayList<>();
+//arajin toxn enq stanum hashivneri
+        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, null));
+        recyclerViewItem_ArrayList.add(new RecyclerViewItem(0, "0"));
+//        ((LinearLayoutManager) recyclerView.getLayoutManager()).
+//                scrollToPositionWithOffset(recyclerViewItem_ArrayList.size() - 1, 0);
+
+//tarmacnum enq adaptern, vor useri katarac popoxutyunnern erevan
+        // adapter.notifyDataSetChanged();
+    }
+//_________________________________________________________________________________
 }

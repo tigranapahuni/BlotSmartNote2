@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
     android:background="@color/coloryellownew"
+    android:gravity="center_horizontal"
     android:orientation="vertical">
 
 
@@ -26,26 +26,49 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:textAllCaps="false"
-                android:ems="3"
                 android:background="@color/coloryellowstrong"
+                android:ems="3"
+                android:gravity="center"
                 android:text="@string/team1"
+                android:textAllCaps="false"
                 android:textColor="@color/coloryellownew"
                 android:textSize="@dimen/tver_Btn_size"
                 android:textStyle="bold" />
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="14dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginRight="1dp">
+
+                <Button
+                    android:id="@+id/btn_XosacacTiv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/coloryellownew"
+                    android:ems="3"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorRed"
+                    android:textSize="@dimen/xosacac_tiv"
+                    android:textStyle="bold" />
+            </androidx.cardview.widget.CardView>
+
             <Button
                 android:id="@+id/btn_Team2"
-                android:textAllCaps="false"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:gravity="center"
                 android:ems="3"
+                android:gravity="center"
                 android:text="@string/team2"
+                android:textAllCaps="false"
                 android:textColor="@color/coloryellownew"
                 android:textSize="@dimen/tver_Btn_size"
                 android:textStyle="bold" />
@@ -61,60 +84,60 @@
                 android:id="@+id/ImgBtn_xach"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@color/coloryellowstrong"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:layout_weight="1"
-                android:layout_gravity="center"
-                android:background="@color/coloryellowstrong"
                 app:srcCompat="@drawable/x_24" />
 
             <ImageButton
                 android:id="@+id/ImgBtn_sirt"
-                android:layout_margin="1dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:layout_weight="1"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
                 app:srcCompat="@drawable/s_24" />
 
             <ImageButton
                 android:id="@+id/ImgBtn_xar"
-                android:layout_margin="1dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:layout_weight="1"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
                 app:srcCompat="@drawable/xar_24" />
 
             <ImageButton
                 android:id="@+id/ImgBtn_qiap"
-                android:layout_margin="1dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:layout_weight="1"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
                 app:srcCompat="@drawable/q_24" />
 
             <ImageButton
                 android:id="@+id/ImgBtn_Tuz"
-                android:layout_margin="1dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="1dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
                 android:paddingTop="10dp"
                 android:paddingBottom="10dp"
-                android:layout_weight="1"
-                android:layout_gravity="center"
-                android:background="@android:color/transparent"
                 app:srcCompat="@drawable/t_24" />
 
         </LinearLayout>
@@ -132,9 +155,9 @@
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_score"
+                android:ems="3"
                 android:gravity="center"
                 android:text="K"
-                android:ems="3"
                 android:textColor="@color/coloryellownew"
                 android:textSize="@dimen/tver_Btn_size"
                 android:textStyle="bold" />
@@ -146,8 +169,8 @@
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:gravity="center"
                 android:ems="3"
+                android:gravity="center"
                 android:text="x2"
                 android:textColor="@color/coloryellownew"
                 android:textSize="@dimen/tver_Btn_size"
@@ -160,8 +183,8 @@
                 android:layout_margin="1dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:gravity="center"
                 android:ems="3"
+                android:gravity="center"
                 android:text="x4"
                 android:textColor="@color/coloryellownew"
                 android:textSize="@dimen/tver_Btn_size"
@@ -179,43 +202,43 @@
                 android:id="@+id/Btn_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="1"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/Btn_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="2"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="2"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/Btn_3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="3"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="3"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -229,43 +252,43 @@
                 android:id="@+id/Btn_4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="4"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="4"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/Btn_5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="5"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="5"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/Btn_6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="6"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="6"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -279,43 +302,43 @@
                 android:id="@+id/Btn_7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="7"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="7"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/Btn_8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="8"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="8"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/Btn_9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="9"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="1"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="9"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -329,37 +352,37 @@
                 android:id="@+id/ImgBtn_Back"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_weight="3"
                 android:layout_margin="1dp"
-                android:src="@drawable/ic_arrow_back_yellow_24dp"
+                android:layout_weight="3"
+                android:background="@drawable/btn_score"
                 android:ems="3"
-                android:background="@drawable/btn_score" />
+                android:gravity="center"
+                android:src="@drawable/ic_arrow_back_yellow_24dp" />
 
             <Button
                 android:id="@+id/Btn_0"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:text="0"
-                android:ems="3"
-                android:textStyle="bold"
-                android:textColor="@color/coloryellownew"
+                android:layout_weight="3"
                 android:background="@drawable/btn_score"
-                android:textSize="@dimen/tver_Btn_size" />
+                android:ems="3"
+                android:gravity="center"
+                android:text="0"
+                android:textColor="@color/coloryellownew"
+                android:textSize="@dimen/tver_Btn_size"
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/ImgBtn_Ok"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:gravity="center"
                 android:layout_margin="1dp"
-                android:src="@drawable/ic_check_yellow_24dp"
+                android:layout_weight="3"
+                android:background="@drawable/btn_score"
                 android:ems="3"
-                android:background="@drawable/btn_score" />
+                android:gravity="center"
+                android:src="@drawable/ic_check_yellow_24dp" />
 
 
         </LinearLayout>

@@ -4,15 +4,12 @@
     <dimen name="parent_padding">8dp</dimen>
     <dimen name="cardView_width_normal_size">165dp</dimen>
     <dimen name="btn_height_normal_size">30dp</dimen>
-    <dimen name="cardView__animacia_width_normal_size">340dp</dimen>
-    <dimen name="cardView_animacia_height_normal_size">240dp</dimen>
-    <dimen name="cardView_result_height_normal_size">340dp</dimen>
-    <dimen name="cardView_animacia_large_normal_size">300dp</dimen>
 
     <dimen name="margin_vernagir_normal_size">20dp</dimen>
     <dimen name="cardView_padding">1dp</dimen>
     <dimen name="player_size">14sp</dimen>
     <dimen name="tver_Btn_size">20sp</dimen>
+    <dimen name="xosacac_tiv">30sp</dimen>
     <dimen name="plus_minus_Btn_width">25dp</dimen>
     <dimen name="plus_minus_Btn_height">20dp</dimen>
     <dimen name="plus_minus_Btn_size">20dp</dimen>
@@ -23,6 +20,6 @@
     <dimen name="large_tver_Btn_size">40sp</dimen>
 
     -----------------------------------------------------------------------
-
-
+    <dimen name="chors_tuxt_margin_View">10dp</dimen>
+    <dimen name="chors_tuxt_margin_View_Ok_button">15dp</dimen>
 </resources>

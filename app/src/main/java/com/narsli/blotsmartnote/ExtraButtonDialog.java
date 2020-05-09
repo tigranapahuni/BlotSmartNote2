@@ -2,6 +2,8 @@ package com.narsli.blotsmartnote;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,11 +18,13 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.narsli.blotsmartnote.Model.Hashiv_Razobrani;
 
 //sarqum enq dialog vorn kpnum e mer razmetka failin
 //nerqevi knopkan` BottomSheetDialogFragment-interfeysov e realizacvum
 public class ExtraButtonDialog extends BottomSheetDialogFragment {
 
+    private Hashiv_Razobrani hashiv_Razobrani;
     private Button
             btn_1, btn_2, btn_3, btn_4, btn_5, btn_6,
             btn_7, btn_8, btn_9, btn_0, btn_K, btn_tk;
@@ -35,7 +39,6 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
     ImageView imgeViw_close_4tuxt_dialog;
     Boolean kaput_banali = false, tak_banali = false;
     private Dialog dialog;
-    // private ImageView imgBtn_Back, imgBtn_Ok, imgBtn_Ok_4tuxt_dialog;
     TextView txtView_Extra, txtView_terz_Qanak,
             txtViw_Extra, txtView_combination,
             txtViw_ArdyunqMiavor, editTxt_taracMiavor,
@@ -44,21 +47,76 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
             txtView_100_Qanak_4tuxtDialog,
             txtView_50_Qanak_4tuxtDialog;
     String order = "0";
-    int combination = 0, tarac_miavor = 0, tarac_itog = 0;
+    int combination = 0, tarac_miavor = 0, tarac_itog;
     //         byte kom1_kom2;
     private BottomSheetListener mListener;//mer sarqac interfeysi ekzempliar
     private int temp_tiv;
-    private byte kom1_kom2_kanchele;
-    private int mast;
+    private byte kom1_kom2, kom1_kom2_kanchele;
+    private int mast, boy_xoz = 0;
     String xosacac_tiv;
-    String kom1_2_miavor_avtomat_hashvac = "0";
+    int hakarakord_miavor_avtomat_hashvac = 0, kom1_2_Ekrani_Miavor;
 
     //--------------------------------------------------------------------------
 //konstruktor
-    public ExtraButtonDialog(byte kom1_kom2_kanchele, int mast, String xosacac_tiv) {
+    public ExtraButtonDialog(
+            int kom1_2_Ekrani_Miavor,
+            byte kom1_kom2, byte kom1_kom2_kanchele, int mast, String xosacac_tiv) {
+        this.kom1_2_Ekrani_Miavor = kom1_2_Ekrani_Miavor;
+        this.kom1_kom2 = kom1_kom2;
         this.kom1_kom2_kanchele = kom1_kom2_kanchele;
-        this.mast = mast;//ete 1-e boy e, h.d. sovarakan xoz
+        this.mast = mast;//ete 4-e boy e, h.d. sovarakan xoz
         this.xosacac_tiv = xosacac_tiv;
+//------------------------------------------------------------------
+//-------------------------------------------------------------------
+//        stanum enq xosacac tivn, quansh e, te kapuyt e ev ayln
+//_________________ xosacac tvi razborka ev verlucum___________________
+        hashiv_Razobrani = new Hashiv_Razobrani();
+
+        // hashiv_Razobrani.setMast(mast);
+//variant quansh
+        if (xosacac_tiv.indexOf("x4") != -1) {
+            hashiv_Razobrani.setQuansh(4);
+        } else if (xosacac_tiv.indexOf("x2") != -1)
+            hashiv_Razobrani.setQuansh(2);
+        else
+            hashiv_Razobrani.setQuansh(1);//quansh chka
+//-----------------------------------------------
+//ete kapuyt ka variant
+        if (xosacac_tiv.indexOf('K') != -1) {//kapuyt ka
+            hashiv_Razobrani.setKapuyt(true);
+            if (xosacac_tiv.indexOf('K') == 0) {
+                hashiv_Razobrani.setXosacac_tiv(25);
+
+
+            } else {
+                hashiv_Razobrani.setXosacac_tiv(Integer.parseInt(xosacac_tiv.substring(0, 2)));
+            }
+        } else//ete kapuyt chka
+        {
+            hashiv_Razobrani.setKapuyt(false);
+            //quansh ka te che
+            if (xosacac_tiv.indexOf("x4") != -1) {
+                hashiv_Razobrani.setXosacac_tiv(
+                        Integer.parseInt(xosacac_tiv.substring(0, xosacac_tiv.length() - 2)));
+
+            } else if (xosacac_tiv.indexOf("x2") != -1) {
+                hashiv_Razobrani.setXosacac_tiv(
+                        Integer.parseInt(xosacac_tiv.substring(0, xosacac_tiv.length() - 2)));
+            } else {
+                hashiv_Razobrani.setXosacac_tiv(Integer.parseInt(xosacac_tiv));
+            }
+
+        }
+//-------------------------------------------------------------------
+//--------------------------------------------
+//stanum enq extra miavor ete usern xozn boy e xosacel
+        if (mast == 4)
+            //ete xozn boy e extra miavor e avelanum
+            boy_xoz = hashiv_Razobrani.getXosacac_tiv();
+        else//ete xozn boy che
+            boy_xoz = 0;
+//--------------------------------------------
+//_______________________________________________
     }
 
     //--------------------------------------------------------------------------
@@ -98,6 +156,19 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
         imgbtn_terz_plus = v.findViewById(R.id.Imgbtn_terz_plus);
         editTxt_taracMiavor = v.findViewById(R.id.editTxt_taracMiavor);
 //-------------------------------------------------------------------------------
+//stanum enq ekrani vrainshvac tmi  @ntacik hashivn, isk ete chka apa 0 (ete=null-i)
+        if (kom1_2_Ekrani_Miavor == 0)
+            order = "0";
+        else
+            order = "" + kom1_2_Ekrani_Miavor;
+
+        tarac_miavor = kom1_2_Ekrani_Miavor;
+        tarac_itog = tarac_miavor + combination;
+        editTxt_taracMiavor.setText(order);
+        txtViw_ArdyunqMiavor.setText(order);
+        //Log.d("ttt", "tarac_itog= "+tarac_itog);
+
+
 //-------------------------------------------------------------------------------
         imgbtn_terz_plus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,7 +185,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     txtView_terz_Qanak.setText("" + (temp_tiv + 1));
                     txtView_combination.setText("" + combination);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    // mListener.onButtonClicked("" + (tarac_miavor + combination), hakarakord_miavor_avtomat_hashvac);
                 }
             }
 
@@ -135,7 +206,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     combination = combination - 2;
                     txtView_combination.setText("" + combination);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    // mListener.onButtonClicked("" + (tarac_miavor + combination), hakarakord_miavor_avtomat_hashvac);
                 }
 
             }
@@ -155,7 +226,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                 }
                 txtView_combination.setText("" + combination);
                 txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                //mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
             }
         });
 //-------------------------------------------------------------------------------
@@ -171,7 +242,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
 
                     kaput_banali = false;
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else {
 //---------------------------------------------
                     order = "Tk";
@@ -179,7 +250,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     btn_K.setBackgroundResource(R.color.colorBlack);
                     kaput_banali = false;
                     txtViw_ArdyunqMiavor.setText("" + tarac_miavor);
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
                 tak_banali = !tak_banali;
 
@@ -206,7 +277,10 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                 } else {
 //---------------------------------------------
                     order = "K";
-                    tarac_miavor = 50;
+                    if (hashiv_Razobrani.getXosacac_tiv() == 25)
+                        tarac_miavor = 50 + boy_xoz;//kapuyt asel kapuyt arel e
+                    else//miamit e kapuyt arel
+                        tarac_miavor = 25 + hashiv_Razobrani.getXosacac_tiv() + boy_xoz;
                     btn_K.setBackgroundResource(R.color.colorBlue);
                     btn_tk.setBackgroundResource(R.color.colorBlack);
                     tak_banali = false;
@@ -215,7 +289,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
 
                 editTxt_taracMiavor.setText(order);
                 txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                // mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
 
             }
 
@@ -226,15 +300,23 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
         imgBtn_Ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if
-//                kom1_kom2_kanchele,
-//                int mast,
-//                String xosacac_tiv
-                mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                //--------------
+//taraca miavorner + kombunacia
+                tarac_itog = (tarac_miavor + combination);
+//ete xalastoy menak xmbagrman rejim e
+                if (kom1_kom2_kanchele == 0) //ete voch mek chi xosacel
+                {
+                    hakarakord_miavor_avtomat_hashvac = 0;
+                } else //erb nor tox grman rejim e
+                    hakarakord_Tmi_Miavor_hashvum();
+//____________________________________________________
+                mListener.onButtonClicked(tarac_itog,
+                        hakarakord_miavor_avtomat_hashvac);
                 //miangamic pakel nerqevi toxi
                 dismiss();
 
             }
+
         });
 //---------------------------------------------------------------------
         imgBtn_Back.setOnClickListener(new View.OnClickListener() {
@@ -246,14 +328,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     order = order.substring(0, order.length() - 1);
                     order = "0";
                     tarac_miavor = 0;
-                    mListener.onButtonClicked(order, kom1_2_miavor_avtomat_hashvac);
+                    // mListener.onButtonClicked(order, hakarakord_miavor_avtomat_hashvac);
                     editTxt_taracMiavor.setText(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
                 }
                 if (order != "Tk" & order.length() > 1) {
                     order = order.substring(0, order.length() - 1);
                     tarac_miavor = Integer.parseInt(order);
-                    mListener.onButtonClicked(order, kom1_2_miavor_avtomat_hashvac);
+                    // mListener.onButtonClicked(order, hakarakord_miavor_avtomat_hashvac);
                     editTxt_taracMiavor.setText(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
                 }
@@ -270,14 +352,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    // mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else if (order != "Tk" & order != "K" & order.length() < 3) {
                     order = order + "1";
 
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    // mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
         });
@@ -291,14 +373,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else if (order != "Tk" & order != "K" & order.length() < 3) {
                     order = order + "2";
 
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
         });
@@ -312,14 +394,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else if (order != "Tk" & order != "K" & order.length() < 3) {
                     order = order + "3";
 
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //   mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
         });//---------------------------------------------------------------------
@@ -332,14 +414,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else if (order != "Tk" & order != "K" & order.length() < 3) {
                     order = order + "4";
 
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //   mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
         });//---------------------------------------------------------------------
@@ -352,14 +434,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //   mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else if (order != "Tk" & order != "K" & order.length() < 3) {
                     order = order + "5";
 
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
         });//---------------------------------------------------------------------
@@ -372,14 +454,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else if (order != "Tk" & order != "K" & order.length() < 3) {
                     order = order + "6";
 
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //   mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
         });//---------------------------------------------------------------------
@@ -392,14 +474,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else if (order != "Tk" & order != "K" & order.length() < 3) {
                     order = order + "7";
 
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
         });//---------------------------------------------------------------------
@@ -412,14 +494,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //   mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else if (order != "Tk" & order != "K" & order.length() < 3) {
                     order = order + "8";
 
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //   mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
         });//---------------------------------------------------------------------
@@ -432,14 +514,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 } else if (order != "Tk" & order != "K" & order.length() < 3) {
                     order = order + "9";
 
                     editTxt_taracMiavor.setText(order);
                     tarac_miavor = Integer.parseInt(order);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //   mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
         });
@@ -456,7 +538,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                         editTxt_taracMiavor.setText(order);
                         tarac_miavor = Integer.parseInt(order);
                         txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                        mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                        //      mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                     }
                 }
             }
@@ -473,7 +555,9 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
 //asum enq dialogi mej inch ka et chaperov el lini dilaogn
 //         dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT,
 //                 WindowManager.LayoutParams.MATCH_PARENT);
-        dialog.setCancelable(false);//nazad knopkan anjatum enq
+//        dialog.setCancelable(false);//nazad knopkan anjatum enq
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 //-------------------------------------------------------------------------
 //    dialog-i view-neri inicializacia
         imgeViw_close_4tuxt_dialog = dialog.findViewById(R.id.ImgeViw_closeX);
@@ -522,7 +606,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     combination = combination - 11;
                 txtView_combination.setText("" + combination);
                 txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
             }
         });
 //-------------------------------------------------------------------------------
@@ -542,7 +626,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
 
                 txtView_combination.setText("" + combination);
                 txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
             }
         });
 //-------------------------------------------------------------------------------
@@ -561,7 +645,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
 //                    combination = combination - 0;
                 txtView_combination.setText("" + combination);
                 txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                //  mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
             }
         });
 //-------------------------------------------------------------------------------
@@ -581,7 +665,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     txtView_chorstuxt_Qanak_4tuxtDialog.setText("" + (temp_tiv + 1));
                     txtView_combination.setText("" + combination);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //      mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
 
@@ -602,7 +686,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     combination = combination - 10;
                     txtView_combination.setText("" + combination);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //     mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
 
             }
@@ -624,7 +708,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     txtView_100_Qanak_4tuxtDialog.setText("" + (temp_tiv + 1));
                     txtView_combination.setText("" + combination);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
 
@@ -645,7 +729,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     combination = combination - 10;
                     txtView_combination.setText("" + combination);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
 
             }
@@ -668,7 +752,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     txtView_50_Qanak_4tuxtDialog.setText("" + (temp_tiv + 1));
                     txtView_combination.setText("" + combination);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
             }
 
@@ -689,7 +773,7 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
                     combination = combination - 5;
                     txtView_combination.setText("" + combination);
                     txtViw_ArdyunqMiavor.setText("" + (tarac_miavor + combination));
-                    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
+                    //    mListener.onButtonClicked("" + (tarac_miavor + combination), kom1_2_miavor_avtomat_hashvac);
                 }
 
             }
@@ -726,8 +810,14 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
     }
 
     //-------------------------------------------------------------------------------
+//!!!!!!!!!!!!!!!!!!!!!!
+//stexcum enq interfeys, vorn uni mek metod, vorin el 2 parametr enq talis
+//ays interfeysi metodn petq e pereopredelyatca lini partaadir mainactivty-um qani vor
+//mainActivity-n implement e anum mer ays ExtraButtonDialog clasi ays BottomSheetListener
+//metodin (ExtraButtonDialog.BottomSheetListener), @nd vorum mainActivty-um
+// pereopredelyatca anelis, ays metodn stanum e 2 String parametr ays clasic pryamoy
     public interface BottomSheetListener {
-        void onButtonClicked(String taracMiavor_Kom1_2, String kom1_2_miavor_avtomat_hashvac);
+        void onButtonClicked(int taracMiavor_Kom1_2, int kom1_2_miavor_avtomat_hashvac);
     }
 
     //----------------------------------------------------------
@@ -744,4 +834,73 @@ public class ExtraButtonDialog extends BottomSheetDialogFragment {
     }
 
     //_____________________________________________________________________
+//ays metodum katarum enq hakarakord tmi miavornern, @nd vorum reversi efekt enq arel
+// vorpeszi kodn 2 angam chgrenq mi hat paymanov stugum enq te kom1-n e te kom2-e xozn xosacel
+//apa ete kom1-n e toxum enq vonc ka
+// (qani vor kodn grel  enq kom1-n e xosacel variantov) isk ete kom2-n e, uxaki kom1-i
+//kom2-i texern enq poxum
+    private void hakarakord_Tmi_Miavor_hashvum() {
+        int temp_kom1_kom2;
+//----------------------------
+//ete mezic mekn e xosacel
+        if (kom1_kom2_kanchele == 1) {//ete es em xosacel
+            temp_kom1_kom2 = kom1_kom2;
+        } else {//ete duq eq xosacel,
+            if (kom1_kom2 == 1)
+                temp_kom1_kom2 = 2;
+            else
+                temp_kom1_kom2 = 1;
+        }
+
+        //if (temp_Xosacac_Tim == 1)
+        {
+//ete xozn xosacel e kom1-n, u usern grum e kom1-i taracn arajinn
+            if (temp_kom1_kom2 == 1) {
+                //kom1 xosacele ev tak e tvel
+                if (tarac_itog < (hashiv_Razobrani.getXosacac_tiv() * 2)) {
+                    hakarakord_miavor_avtomat_hashvac =
+                            (16 + (hashiv_Razobrani.getXosacac_tiv()
+                                    *//ete quansh ka. ete chka angam 1-ov e
+                                    hashiv_Razobrani.getQuansh()) + combination + boy_xoz);
+                    tarac_itog = 0;
+                } else//kom1 xosacel e ev hanel e
+                    if (((16 + boy_xoz) - (tarac_miavor - hashiv_Razobrani.getXosacac_tiv())) > 0)
+//Log.d("aaa", ""+tarac_miavor);
+                        hakarakord_miavor_avtomat_hashvac = 16 + boy_xoz -
+                                (tarac_miavor - hashiv_Razobrani.getXosacac_tiv());
+            }
+//ete xozn xosacel e kom1-n, u usern grum e kom2-i taracn arajinn
+//------------------------------------
+            else if (temp_kom1_kom2 == 2) {//usern grum e kom2-i taracn arajinn
+                if (hashiv_Razobrani.getKapuyt()//ete kapuyt e xosacel kom1-n
+                        || //kam quansh e asvel
+                        hashiv_Razobrani.getQuansh() > 1) {
+//ete kapuyt e xosacel ka, quansh kom1-n ev chi hanel
+//                           Log.d("astx",""+ tarac_miavor);
+                    if (tarac_miavor > 0)
+                        hakarakord_miavor_avtomat_hashvac = 0;
+                    else//ete kom2 0 miavor e havaqel
+                    {//hakarakord-in verarum enq ir miavornern k || quansh depqerum
+
+                        hakarakord_miavor_avtomat_hashvac =
+                                ((hashiv_Razobrani.getKapuyt() ? 25 : 16) +//ete kapuyt e + 25, h.d. + 16
+                                        (hashiv_Razobrani.getXosacac_tiv()
+                                                *
+                                                hashiv_Razobrani.getQuansh()) + boy_xoz);
+                    }
+                } else { // ete kapuyt chka
+//xozn xosacel e kom1-n ev hanel e, bayc arajinn usern grum e kom2-in
+                    if (tarac_miavor <= (16 - hashiv_Razobrani.getXosacac_tiv()))
+//                        Log.d("aaa",""+
+//                                (16 - tarac_miavor + (hashiv_Razobrani.getXosacac_tiv()+boy_xoz)));
+                        hakarakord_miavor_avtomat_hashvac =
+                                (16 - tarac_miavor + (hashiv_Razobrani.getXosacac_tiv() + boy_xoz));
+//xozn xosacel e kom1-n ev chi hanel, bayc arajinn usern grum e kom2-in
+                    else if (tarac_miavor >= (16 + hashiv_Razobrani.getXosacac_tiv()))
+                        hakarakord_miavor_avtomat_hashvac = 0;
+                }
+            }
+        }
+    }
+//_____________________________________________________________________
 }
